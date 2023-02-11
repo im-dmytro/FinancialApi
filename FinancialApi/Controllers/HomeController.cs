@@ -4,19 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinancialApi.Controllers
 {
     [Route("[controller]/[action]")]
+    [Authorize]
     public class HomeController : Controller
     {
-        [Authorize]
         [HttpGet]
         public string Index()
         {
             return "I am index Allowd for authorized";
         }
 
-        [HttpGet("/")]
+        [HttpGet("/"), AllowAnonymous]
         public string About()
         {
-            return "I am allowd for everyone!";
+            return "I am allowed for everyone!";
         }
     }
 }
