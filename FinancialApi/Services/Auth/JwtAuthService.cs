@@ -14,11 +14,11 @@ using System.Text;
 
 namespace FinancialApi.Services.Auth
 {
-    public class AuthService : IPassword, IToken
+    public class JwtAuthService : IJwtAuthService
     {
         readonly FinancialDbContext context;
         private readonly IConfiguration configuration;
-        public AuthService(FinancialDbContext _context, IConfiguration _configuration)
+        public JwtAuthService(FinancialDbContext _context, IConfiguration _configuration)
         {
             context = _context;
             configuration = _configuration;
@@ -47,7 +47,7 @@ namespace FinancialApi.Services.Auth
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddMinutes(10),
                 signingCredentials: cred);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
@@ -73,7 +73,9 @@ namespace FinancialApi.Services.Auth
         {
             var cookieOptions = new CookieOptions
             {
+                SameSite=SameSiteMode.None,
                 HttpOnly = true,
+                Secure = true,
                 Expires = newRefreshToken.Expires
             };
             cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);

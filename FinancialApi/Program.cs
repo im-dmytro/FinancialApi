@@ -1,5 +1,6 @@
 using FinancialApi.Data;
 using FinancialApi.Models.Account;
+using FinancialApi.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +9,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 
@@ -44,15 +46,17 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+builder.Services.AddScoped<IJwtAuthService,JwtAuthService>();
+
 builder.Services.AddCors(p => p.AddPolicy("corspolicy", build =>
 {
-    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+    build.WithOrigins("http://localhost:5173").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
 }));
 
 
 var app = builder.Build();
 app.UseCors("corspolicy");
-//builder.Services.AddScoped<IMyDependency, MyDependency>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
